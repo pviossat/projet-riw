@@ -61,7 +61,7 @@ def get_tf(term, doc_ID, index):
 
 def get_idf(term, index, nb_doc):
     occurences = len(index[term].keys())
-    return nb_doc / occurences
+    return np.log(nb_doc / occurences)
 
 
 def get_tf_logarithmique(term, doc_ID, index):
