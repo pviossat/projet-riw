@@ -35,7 +35,7 @@ def query_weighting(weighting_scheme_query, query, term, nb_doc, index):
     if weighting_scheme_query == "BIN":
         return 1
     elif weighting_scheme_query == "FRQ":
-        return query.count(term) * np.log(nb_doc / len(index[term].keys()))
+        return query.count(term)  # * np.log(nb_doc / len(index[term].keys()))
     else:
         print('Error : Wrong weighting scheme for query')
 
@@ -62,6 +62,11 @@ def get_tf(term, doc_ID, index):
 def get_idf(term, index, nb_doc):
     occurences = len(index[term].keys())
     return np.log(nb_doc / occurences)
+
+
+def get_idf_normalized(term, index, nb_doc):
+    occurences = len(index[term].keys())
+    return max(0, np.log((nb_doc - occurences) / occurences))
 
 
 def get_tf_logarithmique(term, doc_ID, index):
