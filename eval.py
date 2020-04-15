@@ -1,21 +1,22 @@
 from os.path import isfile
 
 import numpy as np
-from vectorial_model import processing_vectorial_query
 import pickle
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 
-def mean_average_precision(QUERIES, index, model, true_results, K, weighting_schemes, stats_collection,forcebuild=False):
-    average_precision = []
+def mAp(QUERIES,results_obtained,query_output, K,model_name,forcebuild= False):
+    precisions = []
     for i,query in QUERIES.items():
-        average_precision.append(mean_precision(query, index, model, true_results[str(i)], K, weighting_schemes, stats_collection,forcebuild))
-    return np.mean(average_precision)
+        print("Computing the mean average precision for query {}".format(query))
+        true_results = query_output[str(i)]
+        precisions.append(average_precision(results_obtained[str(i)],true_results,K,model_name,str(i),forcebuild))
+    return precisions
 
 
-def mean_precision(query, index, model, true_result, K, weighting_schemes, stats_collection,forcebuild=False):
-    results = draw_recall_precision_curve(query, index, model, true_result, weighting_schemes, stats_collection,forcebuild)
+def average_precision(relevant_doc_ids, true_result ,K,model_name,query_number,forcebuild=False):
+    results = get_recall_precision(relevant_doc_ids, true_result,model_name,query_number,forcebuild)
     means = np.zeros(K)
     counter = 0
     for value in np.arange(0, 1, 1 / K):
@@ -24,18 +25,14 @@ def mean_precision(query, index, model, true_result, K, weighting_schemes, stats
     return np.mean(means)
 
 
-def draw_recall_precision_curve(query, index, model, true_result, weighting_schemes, stats_collection, forcebuild=False):
-    weighting_scheme_query = weighting_schemes["frequency"]
-    weighting_scheme_document = weighting_schemes[model]
-    if not forcebuild and isfile(model):
-        filehandler = open(model, 'rb')
+def get_recall_precision(relevant_doc_ids, true_result,model_name,query_number,forcebuild=False):
+    name = model_name+query_number
+    if not forcebuild and isfile(name):
+        filehandler = open(model_name, 'rb')
         precision_recall = pickle.load(filehandler)
     else:
-        processed = processing_vectorial_query(query, index, stats_collection, weighting_scheme_document,
-                                           weighting_scheme_query)
-        relevant_docs = list(processed.keys())
-        precision_recall = list(map(lambda x: evaluate(x, true_result, relevant_docs), tqdm(range(1, len(relevant_docs)))))
-        filehander = open(model, 'wb')
+        precision_recall = list(map(lambda x: evaluate(x, true_result, relevant_doc_ids), tqdm(range(1, len(relevant_doc_ids)))))
+        filehander = open(name, 'wb')
         pickle.dump(precision_recall, filehander)
     return np.array(precision_recall)
 
@@ -68,11 +65,14 @@ def interpolate_precision(value, results):
     return interpolation
 
 
-def draw_interpolate_recall_precision_curve(query, index, model, query_output, weighting_schemes, stats_collection):
-    results = draw_recall_precision_curve(query, index, model, query_output, weighting_schemes, stats_collection)
-    interpolates = np.zeros(10)
+def draw_interpolate_recall_precision_curve(relevant_doc_ids, true_result,model_name,K,query_number):
+    results = get_recall_precision(relevant_doc_ids, true_result,model_name,query_number,forcebuild=False)
+    interpolates = np.zeros(K)
     counter = 0
-    for value in np.arange(0, 1, 0.1):
+    for value in np.arange(0, 1, 1/K):
         interpolates[counter] = interpolate_precision(value, results)
         counter += 1
-    plt.plot(interpolates, np.arange(0, 1, 0.1))
+    plt.plot(interpolates, np.arange(0, 1, 1/K))
+
+
+
