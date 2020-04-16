@@ -12,7 +12,7 @@ def mAp(QUERIES,results_obtained,query_output, K,model_name,forcebuild= False):
         print("Computing the mean average precision for query {}".format(query))
         true_results = query_output[str(i)]
         precisions.append(average_precision(results_obtained[str(i)],true_results,K,model_name,str(i),forcebuild))
-    return precisions
+    return np.mean(precisions)
 
 
 def average_precision(relevant_doc_ids, true_result ,K,model_name,query_number,forcebuild=False):
