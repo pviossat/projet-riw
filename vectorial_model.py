@@ -52,7 +52,8 @@ def document_weighting(weighting_scheme_document, doc_ID, term, index, nb_doc, s
     elif weighting_scheme_document == "TILN":
         return get_tf_logarithme_normalise(term, doc_ID, index, stats_collection) * get_idf(term, index, nb_doc)
     else:
-        print('Error : Wrong weighting scheme for document')
+        print('Error : Wrong weighting scheme for document :')
+        print()
 
 
 def get_tf(term, doc_ID, index):
