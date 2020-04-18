@@ -15,7 +15,7 @@ def processing_vectorial_query(query, index, stats_collection, weighting_scheme_
     n_document = dict(map(lambda x: (x, 0), docs_ids))
     for term in query_terms:
         if term in vocabulary:
-            w_query = query_weighting(weighting_scheme_query, query, term, nb_doc, index)
+            w_query = query_weighting(weighting_scheme_query, query, term)
             n_query += w_query ** 2
             postings = index[term].keys()
             for doc_ID in postings:
@@ -31,11 +31,11 @@ def processing_vectorial_query(query, index, stats_collection, weighting_scheme_
     return ordered_relevant_docs
 
 
-def query_weighting(weighting_scheme_query, query, term, nb_doc, index):
+def query_weighting(weighting_scheme_query, query, term):
     if weighting_scheme_query == "BIN":
         return 1
     elif weighting_scheme_query == "FRQ":
-        return query.count(term)  # * np.log(nb_doc / len(index[term].keys()))
+        return query.count(term)
     else:
         print('Error : Wrong weighting scheme for query')
 
@@ -52,7 +52,8 @@ def document_weighting(weighting_scheme_document, doc_ID, term, index, nb_doc, s
     elif weighting_scheme_document == "TILN":
         return get_tf_logarithme_normalise(term, doc_ID, index, stats_collection) * get_idf(term, index, nb_doc)
     else:
-        print('Error : Wrong weighting scheme for document')
+        print('Error : Wrong weighting scheme for document :')
+        print()
 
 
 def get_tf(term, doc_ID, index):
