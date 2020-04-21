@@ -17,6 +17,7 @@ The arborescence that we picked is as follow ;
 + helpers
   • eval.py
   • utils.py
++ stored_objects
 • final_notebook.ipynb
 ```
 
