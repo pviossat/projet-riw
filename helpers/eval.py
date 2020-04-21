@@ -11,7 +11,10 @@ def mAp(QUERIES,results_obtained,query_output, K,model_name,forcebuild= False):
     for i,query in QUERIES.items():
         print("Computing the mean average precision for query {}".format(query))
         true_results = query_output[str(i)]
-        precisions.append(average_precision(results_obtained[str(i)],true_results,K,model_name,str(i),forcebuild))
+        if results_obtained[str(i)]:
+            precisions.append(average_precision(results_obtained[str(i)],true_results,K,model_name,str(i),forcebuild))
+        else:
+            precisions.append(0)
     return np.mean(precisions)
 
 
@@ -26,9 +29,9 @@ def average_precision(relevant_doc_ids, true_result ,K,model_name,query_number,f
 
 
 def get_recall_precision(relevant_doc_ids, true_result,model_name,query_number,forcebuild=False):
-    name = model_name+query_number
+    name = "stored_objects/" + model_name+query_number
     if not forcebuild and isfile(name):
-        filehandler = open(model_name, 'rb')
+        filehandler = open(name, 'rb')
         precision_recall = pickle.load(filehandler)
     else:
         precision_recall = list(map(lambda x: evaluate(x, true_result, relevant_doc_ids), tqdm(range(1, len(relevant_doc_ids)))))

@@ -1,5 +1,5 @@
 import numpy as np
-from utils import stem
+from helpers.utils import stem
 from collections import Counter
 from tqdm import tqdm
 
