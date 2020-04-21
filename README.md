@@ -1,4 +1,4 @@
-# Projet RI - 
+# Projet RI-Web - search engine
 ## Usage
 The models are deployed in the notebook called `final_notebook.ipynb`. To execute it, one just need to follow the guidelines indicated in the notebook. 
 
