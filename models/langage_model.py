@@ -1,4 +1,4 @@
-from utils import stem
+from helpers.utils import stem
 from operator import itemgetter
 
 def create_vocabulary(collection):
